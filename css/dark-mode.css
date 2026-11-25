@@ -1,0 +1,124 @@
+/* Capa de tema oscuro. Se carga después de bundle.css para conservar el
+   vocabulario de utilidades existente y cambiar únicamente sus tokens visuales. */
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: #1c1917;
+  color: #f5f5f4;
+}
+
+html.dark ::selection {
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+html.dark .bg-white { background-color: #292524; }
+html.dark .bg-stone-50 { background-color: #1c1917; }
+html.dark .bg-stone-100 { background-color: #2e2926; }
+html.dark .bg-stone-200 { background-color: #44403c; }
+html.dark .bg-stone-300 { background-color: #57534e; }
+html.dark [class~="bg-white/95"] { background-color: rgb(41 37 36 / .95); }
+html.dark [class~="bg-stone-50/90"] { background-color: rgb(28 25 23 / .90); }
+html.dark [class~="bg-stone-100/60"] { background-color: rgb(46 41 38 / .60); }
+html.dark [class~="bg-stone-100/70"] { background-color: rgb(46 41 38 / .70); }
+
+html.dark .border-stone-100 { border-color: #3d3834; }
+html.dark .border-stone-200 { border-color: #514a45; }
+html.dark .border-stone-300 { border-color: #655d57; }
+
+html.dark .text-stone-900 { color: #fafaf9; }
+html.dark .text-stone-800 { color: #eeeae7; }
+html.dark .text-stone-700 { color: #ddd6d3; }
+html.dark .text-stone-600 { color: #c6beba; }
+html.dark .text-stone-500 { color: #aaa19b; }
+html.dark .text-stone-400 { color: #8d847e; }
+html.dark .text-stone-300 { color: #a8a29e; }
+
+html.dark .bg-teal-50 { background-color: #123b36; }
+html.dark [class~="bg-teal-50/50"] { background-color: rgb(19 78 74 / .62); }
+html.dark [class~="bg-teal-50/60"] { background-color: rgb(19 78 74 / .68); }
+html.dark .border-teal-100 { border-color: #176b61; }
+html.dark .border-teal-200 { border-color: #238276; }
+html.dark .text-teal-950 { color: #ccfbf1; }
+html.dark .text-teal-900 { color: #ccfbf1; }
+html.dark .text-teal-800 { color: #99f6e4; }
+html.dark .text-teal-700 { color: #5eead4; }
+html.dark .text-teal-400\/80 { color: rgb(45 212 191 / .92); }
+
+html.dark .bg-emerald-50 { background-color: #103d2b; }
+html.dark .border-emerald-200 { border-color: #1f7a57; }
+html.dark .text-emerald-800,
+html.dark .text-emerald-700 { color: #a7f3d0; }
+html.dark .text-emerald-600 { color: #6ee7b7; }
+
+html.dark .bg-amber-50 { background-color: #492e0d; }
+html.dark [class~="bg-amber-50/60"] { background-color: rgb(120 76 10 / .48); }
+html.dark [class~="bg-amber-50/70"] { background-color: rgb(120 76 10 / .56); }
+html.dark .border-amber-200 { border-color: #a76c16; }
+html.dark .border-amber-300 { border-color: #bd8224; }
+html.dark .text-amber-950,
+html.dark .text-amber-900,
+html.dark .text-amber-800 { color: #fde68a; }
+html.dark .text-amber-700,
+html.dark .text-amber-600 { color: #fcd34d; }
+
+html.dark .bg-rose-50 { background-color: #4b1825; }
+html.dark .border-rose-200 { border-color: #a63a55; }
+html.dark .text-rose-800,
+html.dark .text-rose-700 { color: #fda4af; }
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #292524;
+  color: #f5f5f4;
+}
+
+html.dark option { background-color: #292524; color: #f5f5f4; }
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #8d847e; }
+
+html.dark [class~="hover:bg-stone-100"]:hover,
+html.dark [class~="hover:bg-stone-100/70"]:hover { background-color: #3a3430; }
+html.dark [class~="hover:bg-white"]:hover { background-color: #35302d; }
+html.dark [class~="hover:bg-teal-50"]:hover,
+html.dark [class~="hover:bg-teal-50/40"]:hover { background-color: #164c45; }
+html.dark [class~="hover:bg-teal-100"]:hover { background-color: #1b5e55; }
+html.dark [class~="hover:bg-rose-50"]:hover { background-color: #602032; }
+html.dark [class~="hover:text-stone-900"]:hover,
+html.dark [class~="hover:text-stone-800"]:hover { color: #fafaf9; }
+html.dark [class~="hover:text-teal-900"]:hover,
+html.dark [class~="hover:text-teal-800"]:hover { color: #ccfbf1; }
+html.dark [class~="hover:border-stone-300"]:hover { border-color: #887e76; }
+
+html.dark .mono-tag { color: #aaa19b; }
+html.dark .dotgrid { background-image: radial-gradient(#57534e 1px, transparent 1px); }
+html.dark .gauge-track { stroke: #57534e; }
+html.dark .gauge-score { fill: #fafaf9; }
+html.dark .scroll-thin { scrollbar-color: #655d57 transparent; }
+html.dark .scroll-thin::-webkit-scrollbar-thumb { background: #655d57; }
+html.dark :focus-visible { outline-color: #2dd4bf; }
+
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  .theme-toggle,
+  [class*="bg-"],
+  [class*="text-"],
+  [class*="border-"] {
+    transition-property: background-color, border-color, color;
+    transition-duration: 160ms;
+    transition-timing-function: ease;
+  }
+}
+
+@media print {
+  html.dark {
+    color-scheme: light;
+  }
+}

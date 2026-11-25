@@ -31,6 +31,37 @@ const fmtSize = (bytes) => {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* Tema: la preferencia se conserva por navegador y el valor inicial se aplica
+   en <head> para que la interfaz no parpadee al cargar. */
+const THEME_KEY = 'cvalia_theme';
+const isDarkTheme = () => document.documentElement.classList.contains('dark');
+function themeToggleContent(compact) {
+  const dark = isDarkTheme();
+  return ic(dark ? 'sun' : 'moon', 'w-4 h-4') + (compact ? '' : '<span>' + (dark ? 'Claro' : 'Oscuro') + '</span>');
+}
+function themeToggle(compact) {
+  const dark = isDarkTheme();
+  const action = dark ? 'Activar modo claro' : 'Activar modo oscuro';
+  return '<button type="button" data-action="toggle-theme" data-theme-toggle aria-pressed="' + dark + '" aria-label="' + action + '" title="' + action + '" ' +
+    'class="theme-toggle inline-flex items-center justify-center gap-1.5 rounded-lg border border-stone-300 bg-white px-2.5 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition-colors">' +
+    themeToggleContent(compact) + '</button>';
+}
+function applyTheme(theme, persist) {
+  const dark = theme === 'dark';
+  document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  if (persist) { try { localStorage.setItem(THEME_KEY, theme); } catch (_) {} }
+  $$('[data-theme-toggle]').forEach((button) => {
+    const compact = !button.querySelector('span');
+    const action = dark ? 'Activar modo claro' : 'Activar modo oscuro';
+    button.setAttribute('aria-pressed', String(dark));
+    button.setAttribute('aria-label', action);
+    button.setAttribute('title', action);
+    button.innerHTML = themeToggleContent(compact);
+  });
+  refreshIcons();
+}
+
 /* Iconos: el UMD de Lucide reemplaza <i data-lucide> por un SVG. */
 const ic = (name, cls, label) =>
   '<i data-lucide="' + name + '" class="' + (cls || 'w-4 h-4') + '"' +
@@ -267,12 +298,12 @@ function gauge(score, size, showLabel) {
   const col = score >= 75 ? '#059669' : score >= 55 ? '#D97706' : '#E11D48';
   const fs = Math.round(s / 4.2);
   return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 ' + s + ' ' + s + '" role="img" aria-label="Puntaje ' + score + ' de 100" class="shrink-0">' +
-    '<circle cx="' + s / 2 + '" cy="' + s / 2 + '" r="' + r + '" fill="none" stroke="#E7E5E4" stroke-width="' + stroke + '"/>' +
+    '<circle class="gauge-track" cx="' + s / 2 + '" cy="' + s / 2 + '" r="' + r + '" fill="none" stroke="#E7E5E4" stroke-width="' + stroke + '"/>' +
     '<circle class="gauge-ring" cx="' + s / 2 + '" cy="' + s / 2 + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="' + stroke + '" stroke-linecap="round" ' +
       'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + c.toFixed(1) + '" data-target="' + off.toFixed(1) + '" ' +
       'transform="rotate(-90 ' + s / 2 + ' ' + s / 2 + ')"/>' +
     (showLabel === false ? '' :
-      '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="JetBrains Mono, monospace" font-size="' + fs + '" font-weight="600" fill="#1C1917">' +
+      '<text class="gauge-score" x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="JetBrains Mono, monospace" font-size="' + fs + '" font-weight="600" fill="#1C1917">' +
         '<tspan data-count="' + score + '">0</tspan></text>') +
   '</svg>';
 }
@@ -382,7 +413,7 @@ function appShell(active, title, contentHTML) {
         '<header class="md:hidden sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-stone-200 no-print">' +
           '<div class="flex items-center gap-2 px-4 py-3">' + logomark('w-7 h-7') +
             '<span class="font-bold text-stone-900">' + BRAND.name + '</span>' +
-            '<span class="ml-auto">' + demoBadge() + '</span>' +
+            '<span class="ml-auto">' + themeToggle(true) + '</span>' + demoBadge() +
           '</div>' +
           '<nav class="flex gap-1 overflow-x-auto px-3 pb-2.5" aria-label="Principal móvil">' +
             NAV.concat([{ key: 'sitio', href: '#/', icon: 'home', label: 'Sitio' }]).map((n) => {
@@ -394,7 +425,7 @@ function appShell(active, title, contentHTML) {
         '</header>' +
         '<div class="hidden md:flex items-center justify-between gap-4 px-6 lg:px-8 py-3.5 border-b border-stone-200 bg-white no-print">' +
           '<h1 class="text-sm font-semibold text-stone-800">' + esc(title) + '</h1>' +
-          '<div class="flex items-center gap-3">' + demoBadge() +
+          '<div class="flex items-center gap-3">' + demoBadge() + themeToggle() +
             '<button type="button" data-action="reset-demo" class="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 transition-colors">' +
             ic('rotate-ccw', 'w-3.5 h-3.5') + 'Restablecer demo</button>' +
           '</div>' +
@@ -418,7 +449,7 @@ function landingNav() {
       '<nav class="hidden lg:flex items-center gap-1 text-sm" aria-label="Secciones">' +
         links.map((l) => '<a href="' + l[0] + '" class="px-3 py-2 rounded-md text-stone-600 hover:text-stone-900 hover:bg-white transition-colors">' + l[1] + '</a>').join('') +
       '</nav>' +
-      '<div class="ml-auto flex items-center gap-3">' +
+      '<div class="ml-auto flex items-center gap-3">' + themeToggle(true) +
         '<span class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-500">' +
           '<span class="w-1.5 h-1.5 rounded-full bg-teal-600"></span>Prototipo no funcional</span>' +
         '<a href="#/evaluar" data-action="go" data-to="#/evaluar" class="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors">' +
@@ -1348,6 +1379,11 @@ function route() {
 const actions = {
   go: (el) => { const to = el.dataset.to; if (to && location.hash !== to) location.hash = to; else route(); },
   'close-drawer': () => closeDrawer(),
+  'toggle-theme': () => {
+    const next = isDarkTheme() ? 'light' : 'dark';
+    applyTheme(next, true);
+    toast(next === 'dark' ? 'Modo oscuro activado.' : 'Modo claro activado.', 'info');
+  },
   'sample-report': () => {
     drawerCandidateId = null;
     const rec = state.evals.find((e) => e.id === 'TS-0131') || makeEval('ana', 'backend-sr');
@@ -1446,6 +1482,18 @@ window.addEventListener('hashchange', () => {
   /* Solo las rutas de aplicación re-renderizan; las anclas de la landing
      (#problema, #flujo…) dejan que el navegador desplace de forma nativa. */
   if (location.hash.startsWith('#/')) route();
+});
+
+/* El reporte conserva su salida clara al imprimir, incluso si la interfaz se
+   está usando en oscuro. La preferencia no se modifica ni se persiste. */
+let themeBeforePrint = null;
+window.addEventListener('beforeprint', () => {
+  themeBeforePrint = isDarkTheme() ? 'dark' : 'light';
+  if (themeBeforePrint === 'dark') applyTheme('light', false);
+});
+window.addEventListener('afterprint', () => {
+  if (themeBeforePrint === 'dark') applyTheme('dark', false);
+  themeBeforePrint = null;
 });
 
 /* --------------------------------------------------------------------------
